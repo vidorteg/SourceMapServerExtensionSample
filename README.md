@@ -5,7 +5,7 @@ https://docs.google.com/document/d/1UL7dIK-yQMiI-qRhbceZ5X6fZNvigEm2Kwz4MJACoLo/
 
 # Common Setup
 Both options assume the following environment
-- Site A: 
+- Site A:
   - contains a version of the web application WITH source maps.
   - is served over http://127.0.0.1:8080
 - Site B: 
