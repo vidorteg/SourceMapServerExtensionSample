@@ -1,4 +1,4 @@
-chrome.devtools.panels.create('LocalSymbolServerExtension',
+chrome.devtools.panels.create('SourceMapServerExt_2ndImpl',
   '../../icons/icon16.png',
   '../../devtoolsPanel.html',
   function (panel) {
