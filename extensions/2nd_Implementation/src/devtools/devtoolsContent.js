@@ -22,11 +22,11 @@ registerButton.onclick = (event) => {
 // let port = chrome.runtime.connect({name: "sourceMapServerExtension"});
 // port.postMessage(request);
 
-unregisterButton.onclick = (event) => {
-  request = { command: "unregister" }
-  chrome.runtime.sendMessage(request, (response) => {
-    if (response) {
-      console.log(response.ack);
-    }
-  })
-}
+// unregisterButton.onclick = (event) => {
+//   request = { command: "unregister" }
+//   chrome.runtime.sendMessage(request, (response) => {
+//     if (response) {
+//       console.log(response.ack);
+//     }
+//   })
+// }

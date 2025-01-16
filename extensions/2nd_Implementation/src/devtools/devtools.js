@@ -32,25 +32,29 @@ function filterResource(resource) {
   }
 }
 
-/**
- * Loads source map from a local server in 127.0.0.1:8080.
- */
-async function loadSourceMap(resource) {
+async function sourceMapURLDataURL(resource) {
   let textResponse;
   const startTime = performance.now()
   try {
     const retrievedSourceMapUrl = (resource.url.toString()).replace('8081', '8080').concat('.map');
     const response = await fetch(retrievedSourceMapUrl);
 
-    textResponse = await response.text();
+    const decodedResponse = await response.text();
+
+    // encoding in dataURL
+    textResponse = `data:text/plain;base64,${btoa(decodedResponse)}`;
+
     totalSourcemaps++;
   } catch (error) {
     console.error(`Error while loading sourceMap:\n${error}`);
   } finally {
     const endTime = performance.now();
     return textResponse;
-
   }
+}
+
+async function sourceMapURLNonDataURL(resource) {
+  return Promise.resolve((resource.url.toString()).replace('8081', '8080').concat('.map'));
 }
 
 // Uncomment this when you are doing the performance test and comment out the
@@ -68,16 +72,16 @@ chrome.runtime.onConnect.addListener(
         chrome.devtools.inspectedWindow.onResourceAdded.addListener(
           async (resource) => {
            // totalCalls++;
-            if (filterResource(resource)) {
-              const sourceMap = await loadSourceMap(resource);
-              if (sourceMap) {
-                resource.attachSourceMap(sourceMap, true, (error) => {
-                  if (error && error.code !== 'OK') {
-                    port.postMessage({ resource: 'Error while processing source map from extension' });
-                  }
-                })
+           if (filterResource(resource)) {
+            const sourceMap = await sourceMapURLNonDataURL(resource);
+            if (sourceMap) {
+              resource.attachSourceMapURL(sourceMap, true, (error) => {
+                if (error && error.code !== 'OK') {
+                  port.postMessage({ resource: 'Error while processing source map from extension' });
+                }
+              })
 
-                //console.log(`totalSourcemaps ${totalSourcemaps}`);
+              //console.log(`totalSourcemaps ${totalSourcemaps}`);
               }
             }
           }
