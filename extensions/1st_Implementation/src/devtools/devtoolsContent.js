@@ -21,11 +21,11 @@ registerButton.onclick = (event) => {
 //   }
 // })();
 
-unregisterButton.onclick = (event) => {
-  request = { command: "unregisterSourceMapServer" }
-  chrome.runtime.sendMessage(request, (response) => {
-    if (response) {
-      console.log(response.ack);
-    }
-  })
-}
+// unregisterButton.onclick = (event) => {
+//   request = { command: "unregisterSourceMapServer" }
+//   chrome.runtime.sendMessage(request, (response) => {
+//     if (response) {
+//       console.log(response.ack);
+//     }
+//   })
+// }

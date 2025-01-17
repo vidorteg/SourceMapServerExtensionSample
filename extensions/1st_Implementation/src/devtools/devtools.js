@@ -9,7 +9,7 @@ chrome.devtools.panels.create("SourceMapServerExt_1stImpl",
 const registeredPlugins = [];
 
 class LocalSourceMapServerExtension {
-  async loadSourceMap(parameters) {
+  async loadSourceMapURL(parameters) {
     let textResponse;
     try {
       if (parameters && parameters.sourceURL.startsWith('http://127.0.0.1') && !parameters.sourceURL.includes(':sourcemap') && (parameters.sourceURL.startsWith('http') || parameters.sourceURL.startsWith('https'))
@@ -17,7 +17,25 @@ class LocalSourceMapServerExtension {
         && !parameters.sourceURL.includes('8080')){
           const retrievedSourceMapUrl = (parameters.sourceURL.toString()).replace('8081', '8080').concat('.map');
           const response = await fetch(retrievedSourceMapUrl);
-          textResponse = await response.text();
+          const decodedResponse = await response.text();
+          textResponse = `data:text/plain;base64,${btoa(decodedResponse)}`;
+      }
+    } catch (error) {
+      console.error(`Error while loading sourceMap:\n${error}`);
+    } finally {
+      return textResponse;
+    }
+  }
+}
+
+class LocalSourceMapServerExtensionDataURL {
+  async loadSourceMapURL(parameters) {
+    let textResponse;
+    try {
+      if (parameters && parameters.sourceURL.startsWith('http://127.0.0.1') && !parameters.sourceURL.includes(':sourcemap') && (parameters.sourceURL.startsWith('http') || parameters.sourceURL.startsWith('https'))
+        && (parameters.sourceURL.includes('.js') || parameters.sourceURL.includes('.mjs'))
+        && !parameters.sourceURL.includes('8080')){
+          textResponse = (parameters.sourceURL.toString()).replace('8081', '8080').concat('.map');
       }
     } catch (error) {
       console.error(`Error while loading sourceMap:\n${error}`);
@@ -31,7 +49,7 @@ chrome.runtime.onMessage.addListener(
   (request, sender, sendResponse) => {
     let plugin;
     if (request.command === "registerSourceMapServer") {
-      plugin = new LocalSourceMapServerExtension();
+      plugin = new LocalSourceMapServerExtensionDataURL();
       chrome.devtools.debugger.sourceMapServerExtensions.registerSourceMapServerExtensionPlugin(
         plugin,
         "SourceMapServerExtension"
